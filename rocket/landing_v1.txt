@@ -1,1 +1,93 @@
+sas off.
+rcs on.
 
+set vess to ship.
+set x to 0.
+set thr to 1.
+
+until x = 1 {
+  clearscreen.  
+
+  print ("ALT:RADAR: " + ALT:RADAR).
+  print ("srfretrograde : " + vess:srfretrograde).
+  print ("facing : " + vess:facing).
+
+  lock steering to vess:srfretrograde.
+  lock throttle to 0.2.
+  
+  set del to vess:srfretrograde - vess:facing.
+  print ("delta: " + del:PITCH + " " + del:YAW).  
+  
+  if (del:PITCH > -90 and del:PITCH < 90 and
+      del:YAW > -90 and del:YAW < 90) {
+    lock throttle to 1.
+    break.
+  }
+
+  wait (0.1).
+}
+
+until x = 1 {
+  clearscreen.  
+
+  print ("ALT:RADAR: " + ALT:RADAR).
+  print ("groundspeed: " + vess:groundspeed).
+  
+  lock steering to vess:srfretrograde.
+ 
+  if (vess:groundspeed < 5) {
+    lock throttle to 0.
+    lock steering to heading (0, 90).
+    break.
+  }
+
+  wait (0.1).
+}
+
+lock steering to heading (0, 90).
+
+until x = 1 {
+  clearscreen.
+  print ("VERTICALSPEED: " + vess:VERTICALSPEED).
+  print ("ALT:RADAR: " + ALT:RADAR).
+  
+  if (vess:VERTICALSPEED < -5) {
+    lock throttle to 1.
+  }
+  if (vess:VERTICALSPEED > -5) {
+    lock throttle to 0.
+  }
+  if (ALT:RADAR < 100) {
+    gear on.
+    break.
+  }
+  wait (0.1).
+} 
+
+until x = 1 {
+  clearscreen.
+  print ("VERTICALSPEED: " + vess:VERTICALSPEED).
+  print ("ALT:RADAR: " + ALT:RADAR).
+  
+  if (vess:VERTICALSPEED < -2) {
+    lock throttle to 1.
+  }
+  if (vess:VERTICALSPEED > -2) {
+    lock throttle to 0.
+  }
+  if (ALT:RADAR < 9) {
+    sas off.
+    rcs off.
+    lock throttle to 0.
+    break.
+  }
+  wait (0.1).
+} 
+
+lock throttle to 0.
+sas off.
+
+lock steering to heading (0, 90).
+wait (10).
+
+rcs off.
