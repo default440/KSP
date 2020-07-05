@@ -57,7 +57,7 @@ until x = 1 {
   if (vess:VERTICALSPEED > -5) {
     lock throttle to 0.
   }
-  if (ALT:RADAR < 50) {
+  if (ALT:RADAR < 100) {
     gear on.
     break.
   }
@@ -75,7 +75,7 @@ until x = 1 {
   if (vess:VERTICALSPEED > -2) {
     lock throttle to 0.
   }
-  if (ALT:RADAR < 7) {
+  if (ALT:RADAR < 9) {
     sas off.
     rcs off.
     lock throttle to 0.
@@ -83,3 +83,11 @@ until x = 1 {
   }
   wait (0.1).
 } 
+
+lock throttle to 0.
+sas off.
+
+lock steering to heading (0, 90).
+wait (10).
+
+rcs off.
