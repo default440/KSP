@@ -1,0 +1,22 @@
+lock steering to heading (0, 90).
+
+set vess to vessel("sh").
+set x to 0.
+set thr to 1.
+
+until x = 1 {
+  clearscreen.
+  print (vess:VERTICALSPEED).
+  print (vess:DIRECTION).
+
+  if (vess:VERTICALSPEED < -5) {
+    lock throttle to 1.
+  }
+  if (vess:VERTICALSPEED > -3) {
+    lock throttle to 0.
+  }   
+  if (ALTITUDE < 1) {
+    set x to 1.
+  }
+  wait (0.1).
+} 
