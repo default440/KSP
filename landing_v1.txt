@@ -1,7 +1,7 @@
 sas off.
 rcs on.
 
-set vess to vessel("sh").
+set vess to ship.
 set x to 0.
 set thr to 1.
 
@@ -59,8 +59,25 @@ until x = 1 {
   }
   if (ALT:RADAR < 50) {
     gear on.
-  }   
-  if (ALT:RADAR < 6) {
+    break.
+  }
+  wait (0.1).
+} 
+
+until x = 1 {
+  clearscreen.
+  print ("VERTICALSPEED: " + vess:VERTICALSPEED).
+  print ("ALT:RADAR: " + ALT:RADAR).
+  
+  if (vess:VERTICALSPEED < -2) {
+    lock throttle to 1.
+  }
+  if (vess:VERTICALSPEED > -2) {
+    lock throttle to 0.
+  }
+  if (ALT:RADAR < 7) {
+    sas off.
+    rcs off.
     lock throttle to 0.
     break.
   }
