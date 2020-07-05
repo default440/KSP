@@ -1,22 +1,50 @@
-lock steering to heading (0, 90).
+sas off.
 
 set vess to vessel("sh").
 set x to 0.
 set thr to 1.
 
 until x = 1 {
+  clearscreen.  
+
+  print ("ALT:RADAR: " + ALT:RADAR).
+  print ("HEADING: " + vess:HEADING).
+  print ("BEARING : " + vess:BEARING).
+  print ("prograde : " + vess:prograde).
+  
+  set pr to prograde.
+  
+  lock steering to pr.
+  lock throttle to 1.
+
+  if (vess:groundspeed < 5) {
+    lock throttle to 0.
+    break.
+  }
+
+  wait (0.1).
+}
+
+lock steering to heading (0, 90).
+
+until x = 1 {
   clearscreen.
-  print (vess:VERTICALSPEED).
-  print (vess:DIRECTION).
+  print ("VERTICALSPEED: " + vess:VERTICALSPEED).
+  print ("ALT:RADAR: " + ALT:RADAR).
+  //print ("_SURFACE " + SURFACE).
 
   if (vess:VERTICALSPEED < -5) {
     lock throttle to 1.
   }
   if (vess:VERTICALSPEED > -3) {
     lock throttle to 0.
+  }
+  if (ALT:RADAR < 50) {
+    gear on.
   }   
-  if (ALTITUDE < 1) {
-    set x to 1.
+  if (ALT:RADAR < 6) {
+    lock throttle to 0.
+    break.
   }
   wait (0.1).
 } 
