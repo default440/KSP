@@ -75,7 +75,7 @@ until x = 1 {
   if (vess:VERTICALSPEED > -2) {
     lock throttle to 0.
   }
-  if (ALT:RADAR < 10) {
+  if (ALT:RADAR < 7) {
     sas off.
     rcs off.
     lock throttle to 0.
