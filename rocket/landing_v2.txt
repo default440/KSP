@@ -1,0 +1,74 @@
+sas off.
+rcs on.
+
+set vess to ship.
+set x to 0.
+set thr to 1.
+
+lock steering to vess:retrograde.
+
+until (vess:facing:pitch - vess:retrograde:pitch < 90 and
+       vess:facing:pitch - vess:retrograde:pitch > -90) {
+  clearscreen.
+  print("correcting heading...").
+  wait(0.5).
+}
+
+until (PERIAPSIS < 20000) {
+  clearscreen.
+  print ("PERIAPSIS: " + PERIAPSIS).
+  lock throttle to 1.
+  wait(0.05).
+}
+
+rcs off.
+
+until (ALTITUDE < 60000) {
+  clearscreen.
+  print ("decline...").
+  print ("ALTITUDE: " + ALTITUDE).
+  lock steering to vess:retrograde.
+  lock throttle to 0.
+  wait(0.05).  
+}
+
+set speed0 to vess:airspeed.
+wait (0.1). 
+
+until (ALT:RADAR < 2000) {
+  clearscreen.
+  
+  set speed1 to vess:airspeed.
+  set acceleration to (speed1 - speed0) / 0.1.  
+  set time1 to (-1 * speed1) / acceleration.
+  set distance to ((speed1 * time1) + (acceleration * time1 * time1) / 2).    
+
+  print ("braking...").
+  print ("acceleration: " + acceleration).
+  print ("time: " + time1).
+  print ("distance: " + distance).
+  print ("airspeed: " + vess:airspeed).
+  print ("ALT:RADAR: " + ALT:RADAR).
+  
+  lock steering to vess:srfretrograde.
+
+  if (acceleration > 0) {
+    if (speed1 > 500) {
+      lock throttle to 1.
+    }
+  }
+  else {
+    if (ALT:RADAR < distance + 2000) {
+      lock throttle to 1.
+    }
+    else {
+      lock throttle to 0.
+    }
+  }
+
+  wait (0.1).
+  set speed0 to speed1.
+  set speed1 to vess:airspeed.  
+}
+
+run landing_v1.txt.
