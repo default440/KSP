@@ -1,0 +1,85 @@
+SET Target TO VESSEL("v2").
+SET TargetPort TO Target:DOCKINGPORTS[0].
+SET MyPort TO SHIP:DOCKINGPORTS[0].
+LOCK TargetVector TO TargetPort:POSITION-MyPort:POSITION.
+LOCK STEERING TO LOOKDIRUP(TargetVector, TargetPort:FACING:UPVECTOR).
+WAIT 10.
+UNLOCK STEERING.
+
+RCS ON.
+SET STARPID TO PIDLOOP(0.1, 0, 1).
+SET TOPPID TO PIDLOOP(0.1, 0, 1).
+SET FOREPID TO PIDLOOP(0.3, 0, 3).
+
+UNTIL (MyPort:STATE:CONTAINS("Docked"))
+{
+	SET DockingFORE TO TargetPort:FACING:FOREVECTOR.
+	SET DockingTOP TO TargetPort:FACING:UPVECTOR.
+	SET DockingSTAR TO TargetPort:FACING:STARVECTOR.
+	
+	SET TargetVector TO TargetPort:POSITION-MyPort:POSITION-DockingFORE*3.
+	SET STEERING TO LOOKDIRUP(TargetVector, DockingTOP).
+
+	SET TopProjection TO VDOT(-TargetVector:NORMALIZED, DockingTOP).
+	SET STARProjection TO VDOT(-TargetVector:NORMALIZED, DockingSTAR).
+	SET FOREProjection TO VDOT(-TargetVector:NORMALIZED, DockingFORE).
+    
+	SET TopAngle TO ARCTAN2(TopProjection, FOREProjection).
+	SET StarAngle TO ARCTAN2(STARProjection, FOREProjection).
+	
+	IF (ABS(TopAngle)>90)
+	{
+		SET TOPPID:KP TO 0.	
+		SET TOPPID:KD TO -1.	
+	}
+	ELSE
+	{
+		SET TOPPID:KP TO 0.1.
+		SET TOPPID:KD TO 1.	
+	}
+	
+	IF (ABS(StarAngle)>90)
+	{
+		SET STARPID:KD TO 10.	
+	}
+	ELSE
+	{
+		SET STARPID:KD TO 1.
+	}	
+	
+	IF (TargetVector:MAG>50)
+	{
+		SET STARPID:KP TO 0.	
+		SET TOPPID:KP TO 0.
+	}
+	ELSE
+	{
+		SET STARPID:KP TO 0.1.	
+		SET TOPPID:KP TO 0.1.
+	}		
+		
+	SET SHIP:CONTROL:TOP TO TOPPID:UPDATE(TIME:SECONDS, TopAngle).
+	SET SHIP:CONTROL:STARBOARD TO STARPID:UPDATE(TIME:SECONDS, -StarAngle).
+
+	IF (ABS(TopAngle)<3) AND (ABS(StarAngle)<3)
+	{
+		SET SHIP:CONTROL:FORE TO FOREPID:UPDATE(TIME:SECONDS, -(TargetVector:MAG)).
+	}
+	ELSE
+	{
+		SET SHIP:CONTROL:FORE TO FOREPID:UPDATE(TIME:SECONDS, (30-TargetVector:MAG)).
+	}
+
+	clearscreen.
+	print "TopAngle: " + TopAngle.
+	print "StarAngle: " + StarAngle.	
+	print "TOP: " + SHIP:CONTROL:TOP.	
+	print "STARBOARD: " + SHIP:CONTROL:STARBOARD.
+}
+
+UNLOCK STEERING.
+SET SHIP:CONTROL:TOP TO 0.
+SET SHIP:CONTROL:STARBOARD TO 0.
+SET SHIP:CONTROL:FORE TO 0.
+RCS OFF.
+clearscreen.
